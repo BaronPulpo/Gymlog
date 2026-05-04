@@ -61,7 +61,8 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
 .col-hdr span:first-child{text-align:left}
 .set-row{display:grid;grid-template-columns:22px 1fr 1fr 30px;gap:8px;align-items:center;margin-bottom:6px}
 .snum{color:var(--muted);font-size:12px;text-align:center;font-family:'Space Mono',monospace}
-.sinp{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;width:100%;outline:none;text-align:center}
+.sinp{background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:7px 8px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;width:100%;outline:none;text-align:center;-moz-appearance:textfield}
+.sinp::-webkit-outer-spin-button,.sinp::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .sinp:focus{border-color:var(--acc)}
 .sinp::placeholder{color:var(--muted)}
 .sdel{background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .15s}
@@ -249,8 +250,8 @@ body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-he
   <div id="log-footer" style="display:none">
     <div class="div"></div>
     <div class="field-row">
-      <div class="field"><label>Körpergewicht (kg)</label><input type="number" id="inp-bw" placeholder="89.5" step="0.1" inputmode="decimal" oninput="saveDraft()"></div>
-      <div class="field"><label>Dauer (min)</label><input type="number" id="inp-dur" placeholder="60" inputmode="numeric" oninput="saveDraft()"></div>
+      <div class="field"><label>Körpergewicht (kg)</label><input type="text" inputmode="decimal" id="inp-bw" placeholder="89.5" autocomplete="off" oninput="saveDraft()"></div>
+      <div class="field"><label>Dauer (min)</label><input type="text" inputmode="numeric" id="inp-dur" placeholder="60" autocomplete="off" oninput="saveDraft()"></div>
     </div>
     <button class="btn-save" onclick="saveWorkout()">Training speichern</button>
   </div>
@@ -321,52 +322,62 @@ const SKEY='gymlog_stable',TKEY='gymlog_tmpl_v1',DKEY='gymlog_draft';
 const OLD_KEYS=['gymlog_v5','gymlog_v4','gymlog_v3','gymlog_v2'];
 
 const SEED=[
-  {id:'s1',date:'2026-01-06',type:'push',bw:null,dur:50,exercises:[{name:'Bankdrücken',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Schrägbankdrücken',sets:[{w:28,r:12},{w:28,r:12},{w:28,r:12}]},{name:'Kabel-Flys / Butterfly',sets:[{w:3.75,r:12},{w:3.75,r:12},{w:3.75,r:12}]},{name:'Trizeps über Kopf',sets:[{w:8,r:12},{w:8,r:12},{w:8,r:12}]},{name:'Pushdown (Seil/Stange)',sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]}]},
-  {id:'s2',date:'2026-01-09',type:'pull',bw:null,dur:50,exercises:[{name:'Latzug',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Rudern',sets:[{w:20,r:12},{w:20,r:12},{w:20,r:12},{w:20,r:12}]},{name:'Pulley / High Row',sets:[{w:20,r:20},{w:20,r:20},{w:20,r:20}]},{name:'Bizeps seitlich / Hammer',sets:[{w:2.5,r:20},{w:2.5,r:20},{w:2.5,r:20}]}]},
-  {id:'s3',date:'2026-01-19',type:'push',bw:null,dur:null,exercises:[{name:'Bankdrücken',sets:[{w:35,r:12},{w:35,r:12},{w:35,r:12}]},{name:'Schrägbankdrücken',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Kabel-Flys / Butterfly',sets:[{w:5,r:12},{w:5,r:12},{w:5,r:12}]},{name:'Trizeps über Kopf',sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:'Pushdown (Seil/Stange)',sets:[{w:15,r:12},{w:15,r:12},{w:15,r:12}]}]},
-  {id:'s4',date:'2026-01-21',type:'pull',bw:null,dur:null,exercises:[{name:'Latzug',sets:[{w:35,r:12},{w:35,r:12},{w:35,r:12},{w:35,r:12}]},{name:'Rudern',sets:[{w:20,r:12},{w:20,r:12},{w:20,r:12},{w:20,r:12}]},{name:'Pulley / High Row',sets:[{w:25,r:20},{w:25,r:20},{w:25,r:20}]},{name:'Bizeps Kabel unten',sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]},{name:'Bizeps seitlich / Hammer',sets:[{w:3.75,r:20},{w:3.75,r:20},{w:3.75,r:20}]}]},
-  {id:'s5',date:'2026-01-25',type:'legs',bw:null,dur:null,exercises:[{name:'Beinpresse',sets:[{w:70,r:12},{w:70,r:12},{w:70,r:12},{w:70,r:12}]},{name:'Beinbeuger',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Beinstrecker',sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:'Waden',sets:[{w:80,r:20},{w:80,r:20},{w:80,r:20}]}]},
-  {id:'s6',date:'2026-01-26',type:'push',bw:null,dur:null,exercises:[{name:'Bankdrücken',sets:[{w:40,r:10},{w:40,r:10},{w:40,r:10}]},{name:'Schrägbankdrücken',sets:[{w:32.5,r:12},{w:32.5,r:12},{w:32.5,r:12}]},{name:'Kabel-Flys / Butterfly',sets:[{w:6.25,r:12},{w:6.25,r:12},{w:6.25,r:12}]},{name:'Trizeps über Kopf',sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:'Pushdown (Seil/Stange)',sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
-  {id:'s7',date:'2026-01-29',type:'pull',bw:88.9,dur:null,exercises:[{name:'Latzug',sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:'Rudern',sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:'Pulley / High Row',sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:'Bizeps Kabel unten',sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]},{name:'Bizeps seitlich / Hammer',sets:[{w:3.75,r:20},{w:3.75,r:20},{w:3.75,r:20}]}]},
-  {id:'s8',date:'2026-02-09',type:'push',bw:null,dur:null,exercises:[{name:'Bankdrücken',sets:[{w:32.5,r:10},{w:32.5,r:10},{w:32.5,r:10}]},{name:'Schrägbankdrücken',sets:[{w:32.5,r:12},{w:32.5,r:12},{w:32.5,r:12}]},{name:'Kabel-Flys / Butterfly',sets:[{w:6.25,r:12},{w:6.25,r:12},{w:6.25,r:12}]},{name:'Trizeps über Kopf',sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:'Pushdown (Seil/Stange)',sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
-  {id:'s9',date:'2026-02-12',type:'pull',bw:null,dur:null,exercises:[{name:'Latzug',sets:[{w:45,r:12},{w:45,r:12},{w:45,r:12},{w:45,r:12}]},{name:'Rudern',sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:'Pulley / High Row',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Bizeps Kabel unten',sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]},{name:'Bizeps seitlich / Hammer',sets:[{w:3.75,r:20},{w:3.75,r:20},{w:3.75,r:20}]}]},
-  {id:'s10',date:'2026-02-15',type:'legs',bw:null,dur:null,exercises:[{name:'Beinpresse',sets:[{w:120,r:12},{w:120,r:12},{w:120,r:12},{w:120,r:12}]},{name:'Beinbeuger',sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:'Beinstrecker',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Waden',sets:[{w:80,r:20},{w:80,r:20},{w:80,r:20}]}]},
-  {id:'s11',date:'2026-02-16',type:'push',bw:null,dur:null,exercises:[{name:'Bankdrücken',sets:[{w:40,r:10},{w:40,r:10},{w:40,r:10}]},{name:'Schrägbankdrücken',sets:[{w:34,r:12},{w:34,r:12},{w:34,r:12}]},{name:'Kabel-Flys / Butterfly',sets:[{w:6.25,r:12},{w:6.25,r:12},{w:6.25,r:12}]},{name:'Trizeps über Kopf',sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:'Pushdown (Seil/Stange)',sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
-  {id:'s12',date:'2026-02-18',type:'pull',bw:null,dur:null,exercises:[{name:'Latzug',sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:'Rudern',sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:'Pulley / High Row',sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:'Bizeps Kabel unten',sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]}]},
-  {id:'s13',date:'2026-02-26',type:'push',bw:null,dur:null,exercises:[{name:'Bankdrücken',sets:[{w:45,r:10},{w:45,r:10},{w:45,r:10}]},{name:'Schrägbankdrücken',sets:[{w:35,r:12},{w:35,r:12},{w:35,r:12}]},{name:'Kabel-Flys / Butterfly',sets:[{w:8,r:15},{w:8,r:15},{w:8,r:15}]},{name:'Trizeps über Kopf',sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:'Pushdown (Seil/Stange)',sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
-  {id:'s14',date:'2026-02-28',type:'pull',bw:null,dur:null,exercises:[{name:'Latzug',sets:[{w:50,r:12},{w:50,r:12},{w:50,r:12},{w:50,r:12}]},{name:'Rudern',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Pulley / High Row',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Reverse Fly / Face Pull',sets:[{w:8,r:20},{w:8,r:20},{w:8,r:20}]},{name:'Bizeps Kabel unten',sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]}]},
-  {id:'s15',date:'2026-03-01',type:'legs',bw:null,dur:null,exercises:[{name:'Beinpresse',sets:[{w:120,r:12},{w:120,r:12},{w:120,r:12},{w:120,r:12}]},{name:'Beinbeuger',sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:'Beinstrecker',sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:'Waden',sets:[{w:80,r:20},{w:80,r:20},{w:80,r:20}]}]},
-  {id:'s16',date:'2026-03-02',type:'push',bw:null,dur:null,exercises:[{name:'Bankdrücken',sets:[{w:50,r:10},{w:50,r:10},{w:50,r:10}]},{name:'Schrägbankdrücken',sets:[{w:37.5,r:12},{w:37.5,r:12},{w:37.5,r:12}]},{name:'Kabel-Flys / Butterfly',sets:[{w:8,r:15},{w:8,r:15},{w:8,r:15}]},{name:'Trizeps über Kopf',sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:'Pushdown (Seil/Stange)',sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
-  {id:'s17',date:'2026-03-04',type:'pull',bw:90.5,dur:60,exercises:[{name:'Latzug',sets:[{w:45,r:12},{w:45,r:12},{w:45,r:12},{w:45,r:12}]},{name:'Rudern',sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:'Pulley / High Row',sets:[{w:30,r:15},{w:30,r:15},{w:30,r:15}]},{name:'Reverse Fly / Face Pull',sets:[{w:8,r:20},{w:8,r:20},{w:8,r:20}]},{name:'Bizeps Kabel unten',sets:[{w:15,r:15},{w:15,r:15},{w:15,r:15}]},{name:'Bizeps seitlich / Hammer',sets:[{w:3.75,r:15},{w:3.75,r:15},{w:3.75,r:15}]}]},
-  {id:'s18',date:'2026-03-06',type:'legs',bw:90.5,dur:50,exercises:[{name:'Beinpresse',sets:[{w:120,r:12},{w:120,r:12},{w:120,r:12},{w:120,r:12}]},{name:'Hip Thrust / RDL',sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:'Beinbeuger',sets:[{w:40,r:15},{w:40,r:15},{w:40,r:15}]},{name:'Beinstrecker',sets:[{w:40,r:15},{w:40,r:15},{w:40,r:15}]},{name:'Waden',sets:[{w:80,r:20},{w:80,r:20},{w:80,r:20}]},{name:'Core',sets:[{w:4,r:15},{w:4,r:15}]}]},
-  {id:'s19',date:'2026-03-09',type:'push',bw:93.2,dur:50,exercises:[{name:'Bankdrücken',sets:[{w:55,r:10},{w:55,r:8},{w:55,r:6},{w:55,r:6}]},{name:'Schrägbankdrücken',sets:[{w:37.5,r:12},{w:37.5,r:12},{w:37.5,r:12}]},{name:'Kabel-Flys / Butterfly',sets:[{w:6.25,r:15},{w:6.25,r:15},{w:6.25,r:15}]},{name:'Schulterdrücken / Seitheben',sets:[{w:8,r:15},{w:8,r:15},{w:8,r:15}]},{name:'Trizeps über Kopf',sets:[{w:7.5,r:15},{w:7.5,r:15},{w:7.5,r:15}]},{name:'Pushdown (Seil/Stange)',sets:[{w:12.5,r:15},{w:12.5,r:15},{w:12.5,r:15}]}]},
-  {id:'s20',date:'2026-03-11',type:'pull',bw:92.0,dur:60,exercises:[{name:'Latzug',sets:[{w:50,r:12},{w:50,r:12},{w:50,r:12},{w:50,r:10}]},{name:'Rudern',sets:[{w:45,r:12},{w:45,r:12},{w:45,r:12},{w:45,r:12}]},{name:'Pulley / High Row',sets:[{w:30,r:15},{w:30,r:15},{w:30,r:15}]},{name:'Reverse Fly / Face Pull',sets:[{w:18,r:20},{w:18,r:20},{w:18,r:20}]},{name:'Bizeps Kabel unten',sets:[{w:17.5,r:15},{w:17.5,r:15},{w:17.5,r:15}]},{name:'Bizeps seitlich / Hammer',sets:[{w:3.75,r:15},{w:3.75,r:15},{w:3.75,r:15}]}]},
-  {id:'s21',date:'2026-03-14',type:'legs',bw:91.8,dur:50,exercises:[{name:'Beinpresse',sets:[{w:140,r:12},{w:140,r:12},{w:140,r:12},{w:140,r:12}]},{name:'Hip Thrust / RDL',sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:'Beinbeuger',sets:[{w:45,r:15},{w:45,r:15},{w:45,r:15}]},{name:'Beinstrecker',sets:[{w:45,r:15},{w:45,r:15},{w:45,r:15}]},{name:'Waden',sets:[{w:90,r:20},{w:90,r:20},{w:90,r:20}]},{name:'Core',sets:[{w:4,r:15},{w:4,r:15}]}]},
-  {id:'s22',date:'2026-03-16',type:'push',bw:93.2,dur:50,exercises:[{name:'Bankdrücken',sets:[{w:55,r:10},{w:55,r:10},{w:55,r:10},{w:55,r:8}]},{name:'Schrägbankdrücken',sets:[{w:37.5,r:12},{w:37.5,r:10},{w:37.5,r:8}]},{name:'Kabel-Flys / Butterfly',sets:[{w:6.25,r:15},{w:6.25,r:15},{w:6.25,r:15}]},{name:'Schulterdrücken / Seitheben',sets:[{w:8,r:15},{w:8,r:15},{w:8,r:15}]},{name:'Trizeps über Kopf',sets:[{w:7.5,r:15},{w:7.5,r:15},{w:7.5,r:15}]},{name:'Pushdown (Seil/Stange)',sets:[{w:12.5,r:15},{w:12.5,r:15},{w:12.5,r:15}]}]},
+  {id:"s1",date:"2026-01-06",type:"push",bw:null,dur:50,exercises:[{name:"Bankdrücken",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Schrägbankdrücken",sets:[{w:28,r:12},{w:28,r:12},{w:28,r:12}]},{name:"Kabel-Flys / Butterfly",sets:[{w:3.75,r:12},{w:3.75,r:12},{w:3.75,r:12}]},{name:"Trizeps über Kopf",sets:[{w:8,r:12},{w:8,r:12},{w:8,r:12}]},{name:"Pushdown (Seil/Stange)",sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]}]},
+  {id:"s2",date:"2026-01-09",type:"pull",bw:null,dur:50,exercises:[{name:"Latzug",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Rudern",sets:[{w:20,r:12},{w:20,r:12},{w:20,r:12},{w:20,r:12}]},{name:"Pulley / High Row",sets:[{w:20,r:20},{w:20,r:20},{w:20,r:20}]},{name:"Bizeps seitlich / Hammer",sets:[{w:2.5,r:20},{w:2.5,r:20},{w:2.5,r:20}]}]},
+  {id:"s3",date:"2026-01-19",type:"push",bw:null,dur:null,exercises:[{name:"Bankdrücken",sets:[{w:35,r:12},{w:35,r:12},{w:35,r:12}]},{name:"Schrägbankdrücken",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Kabel-Flys / Butterfly",sets:[{w:5,r:12},{w:5,r:12},{w:5,r:12}]},{name:"Trizeps über Kopf",sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:"Pushdown (Seil/Stange)",sets:[{w:15,r:12},{w:15,r:12},{w:15,r:12}]}]},
+  {id:"s4",date:"2026-01-21",type:"pull",bw:null,dur:null,exercises:[{name:"Latzug",sets:[{w:35,r:12},{w:35,r:12},{w:35,r:12},{w:35,r:12}]},{name:"Rudern",sets:[{w:20,r:12},{w:20,r:12},{w:20,r:12},{w:20,r:12}]},{name:"Pulley / High Row",sets:[{w:25,r:20},{w:25,r:20},{w:25,r:20}]},{name:"Bizeps Kabel unten",sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]},{name:"Bizeps seitlich / Hammer",sets:[{w:3.75,r:20},{w:3.75,r:20},{w:3.75,r:20}]}]},
+  {id:"s5",date:"2026-01-25",type:"legs",bw:null,dur:null,exercises:[{name:"Beinpresse",sets:[{w:70,r:12},{w:70,r:12},{w:70,r:12},{w:70,r:12}]},{name:"Beinbeuger",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Beinstrecker",sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:"Waden",sets:[{w:80,r:20},{w:80,r:20},{w:80,r:20}]}]},
+  {id:"s6",date:"2026-01-26",type:"push",bw:null,dur:null,exercises:[{name:"Bankdrücken",sets:[{w:40,r:10},{w:40,r:10},{w:40,r:10}]},{name:"Schrägbankdrücken",sets:[{w:32.5,r:12},{w:32.5,r:12},{w:32.5,r:12}]},{name:"Kabel-Flys / Butterfly",sets:[{w:6.25,r:12},{w:6.25,r:12},{w:6.25,r:12}]},{name:"Trizeps über Kopf",sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:"Pushdown (Seil/Stange)",sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
+  {id:"s7",date:"2026-01-29",type:"pull",bw:88.9,dur:null,exercises:[{name:"Latzug",sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:"Rudern",sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:"Pulley / High Row",sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:"Bizeps Kabel unten",sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]},{name:"Bizeps seitlich / Hammer",sets:[{w:3.75,r:20},{w:3.75,r:20},{w:3.75,r:20}]}]},
+  {id:"s8",date:"2026-02-09",type:"push",bw:null,dur:null,exercises:[{name:"Bankdrücken",sets:[{w:32.5,r:10},{w:32.5,r:10},{w:32.5,r:10}]},{name:"Schrägbankdrücken",sets:[{w:32.5,r:12},{w:32.5,r:12},{w:32.5,r:12}]},{name:"Kabel-Flys / Butterfly",sets:[{w:6.25,r:12},{w:6.25,r:12},{w:6.25,r:12}]},{name:"Trizeps über Kopf",sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:"Pushdown (Seil/Stange)",sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
+  {id:"s9",date:"2026-02-12",type:"pull",bw:null,dur:null,exercises:[{name:"Latzug",sets:[{w:45,r:12},{w:45,r:12},{w:45,r:12},{w:45,r:12}]},{name:"Rudern",sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:"Pulley / High Row",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Bizeps Kabel unten",sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]},{name:"Bizeps seitlich / Hammer",sets:[{w:3.75,r:20},{w:3.75,r:20},{w:3.75,r:20}]}]},
+  {id:"s10",date:"2026-02-15",type:"legs",bw:null,dur:null,exercises:[{name:"Beinpresse",sets:[{w:120,r:12},{w:120,r:12},{w:120,r:12},{w:120,r:12}]},{name:"Beinbeuger",sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:"Beinstrecker",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Waden",sets:[{w:80,r:20},{w:80,r:20},{w:80,r:20}]}]},
+  {id:"s11",date:"2026-02-16",type:"push",bw:null,dur:null,exercises:[{name:"Bankdrücken",sets:[{w:40,r:10},{w:40,r:10},{w:40,r:10}]},{name:"Schrägbankdrücken",sets:[{w:34,r:12},{w:34,r:12},{w:34,r:12}]},{name:"Kabel-Flys / Butterfly",sets:[{w:6.25,r:12},{w:6.25,r:12},{w:6.25,r:12}]},{name:"Trizeps über Kopf",sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:"Pushdown (Seil/Stange)",sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
+  {id:"s12",date:"2026-02-18",type:"pull",bw:null,dur:null,exercises:[{name:"Latzug",sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:"Rudern",sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:"Pulley / High Row",sets:[{w:25,r:12},{w:25,r:12},{w:25,r:12}]},{name:"Bizeps Kabel unten",sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]}]},
+  {id:"s13",date:"2026-02-26",type:"push",bw:null,dur:null,exercises:[{name:"Bankdrücken",sets:[{w:45,r:10},{w:45,r:10},{w:45,r:10}]},{name:"Schrägbankdrücken",sets:[{w:35,r:12},{w:35,r:12},{w:35,r:12}]},{name:"Kabel-Flys / Butterfly",sets:[{w:8,r:15},{w:8,r:15},{w:8,r:15}]},{name:"Trizeps über Kopf",sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:"Pushdown (Seil/Stange)",sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
+  {id:"s14",date:"2026-02-28",type:"pull",bw:null,dur:null,exercises:[{name:"Latzug",sets:[{w:50,r:12},{w:50,r:12},{w:50,r:12},{w:50,r:12}]},{name:"Rudern",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Pulley / High Row",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Reverse Fly",sets:[{w:8,r:20},{w:8,r:20},{w:8,r:20}]},{name:"Bizeps Kabel unten",sets:[{w:15,r:20},{w:15,r:20},{w:15,r:20}]}]},
+  {id:"s15",date:"2026-03-01",type:"legs",bw:null,dur:null,exercises:[{name:"Beinpresse",sets:[{w:120,r:12},{w:120,r:12},{w:120,r:12},{w:120,r:12}]},{name:"Beinbeuger",sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:"Beinstrecker",sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:"Waden",sets:[{w:80,r:20},{w:80,r:20},{w:80,r:20}]}]},
+  {id:"s16",date:"2026-03-02",type:"push",bw:null,dur:null,exercises:[{name:"Bankdrücken",sets:[{w:50,r:10},{w:50,r:10},{w:50,r:10}]},{name:"Schrägbankdrücken",sets:[{w:37.5,r:12},{w:37.5,r:12},{w:37.5,r:12}]},{name:"Kabel-Flys / Butterfly",sets:[{w:8,r:15},{w:8,r:15},{w:8,r:15}]},{name:"Trizeps über Kopf",sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:"Pushdown (Seil/Stange)",sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
+  {id:"s17",date:"2026-03-04",type:"pull",bw:90.5,dur:60,exercises:[{name:"Latzug",sets:[{w:45,r:12},{w:45,r:12},{w:45,r:12},{w:45,r:12}]},{name:"Rudern",sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:"Pulley / High Row",sets:[{w:30,r:15},{w:30,r:15},{w:30,r:15}]},{name:"Reverse Fly",sets:[{w:8,r:20},{w:8,r:20},{w:8,r:20}]},{name:"Bizeps Kabel unten",sets:[{w:15,r:15},{w:15,r:15},{w:15,r:15}]},{name:"Bizeps seitlich / Hammer",sets:[{w:3.75,r:15},{w:3.75,r:15},{w:3.75,r:15}]}]},
+  {id:"s18",date:"2026-03-06",type:"legs",bw:90.5,dur:50,exercises:[{name:"Beinpresse",sets:[{w:120,r:12},{w:120,r:12},{w:120,r:12},{w:120,r:12}]},{name:"Hip Thrust",sets:[{w:10,r:12},{w:10,r:12},{w:10,r:12}]},{name:"Beinbeuger",sets:[{w:40,r:15},{w:40,r:15},{w:40,r:15}]},{name:"Beinstrecker",sets:[{w:40,r:15},{w:40,r:15},{w:40,r:15}]},{name:"Waden",sets:[{w:80,r:20},{w:80,r:20},{w:80,r:20}]},{name:"Core",sets:[{w:4,r:15},{w:4,r:15}]}]},
+  {id:"s19",date:"2026-03-09",type:"push",bw:93.2,dur:50,exercises:[{name:"Bankdrücken",sets:[{w:55,r:10},{w:55,r:8},{w:55,r:6},{w:55,r:6}]},{name:"Schrägbankdrücken",sets:[{w:37.5,r:12},{w:37.5,r:12},{w:37.5,r:12}]},{name:"Kabel-Flys / Butterfly",sets:[{w:6.25,r:15},{w:6.25,r:15},{w:6.25,r:15}]},{name:"Schulterdrücken",sets:[{w:8,r:15},{w:8,r:15},{w:8,r:15}]},{name:"Pushdown Seil",sets:[{w:12.5,r:15},{w:12.5,r:15},{w:12.5,r:15}]}]},
+  {id:"s20",date:"2026-03-11",type:"pull",bw:92,dur:60,exercises:[{name:"Latzug",sets:[{w:50,r:12},{w:50,r:12},{w:50,r:12},{w:50,r:10}]},{name:"Rudern",sets:[{w:45,r:12},{w:45,r:12},{w:45,r:12},{w:45,r:12}]},{name:"Pulley / High Row",sets:[{w:30,r:15},{w:30,r:15},{w:30,r:15}]},{name:"Reverse Fly",sets:[{w:18,r:20},{w:18,r:20},{w:18,r:20}]},{name:"Bizeps Kabel",sets:[{w:17.5,r:15},{w:17.5,r:15},{w:17.5,r:15}]}]},
+  {id:"s21",date:"2026-03-14",type:"legs",bw:91.8,dur:50,exercises:[{name:"Beinpresse",sets:[{w:140,r:12},{w:140,r:12},{w:140,r:12},{w:140,r:12}]},{name:"Hip Thrust",sets:[{w:30,r:12},{w:30,r:12},{w:30,r:12}]},{name:"Beinbeuger",sets:[{w:45,r:15},{w:45,r:15},{w:45,r:15}]},{name:"Beinstrecker",sets:[{w:45,r:15},{w:45,r:15},{w:45,r:15}]},{name:"Waden",sets:[{w:90,r:20},{w:90,r:20},{w:90,r:20}]}]},
+  {id:"s22",date:"2026-03-16",type:"push",bw:93.2,dur:50,exercises:[{name:"Bankdrücken",sets:[{w:55,r:10},{w:55,r:10},{w:55,r:10},{w:55,r:8}]},{name:"Schrägbankdrücken",sets:[{w:37.5,r:12},{w:37.5,r:10},{w:37.5,r:8}]},{name:"Schulterdrücken",sets:[{w:8,r:15},{w:8,r:15},{w:8,r:15}]},{name:"Pushdown Seil",sets:[{w:12.5,r:15},{w:12.5,r:15},{w:12.5,r:15}]}]},
+  {id:"1776314507797",date:"2026-04-16",type:"pull",bw:93,dur:55,exercises:[{name:"Latzug",sets:[{w:55,r:12},{w:55,r:12},{w:55,r:12},{w:55,r:11}]},{name:"Rudern",sets:[{w:50,r:12},{w:50,r:12},{w:50,r:12},{w:50,r:12}]},{name:"Reverse Fly",sets:[{w:32,r:20},{w:32,r:20},{w:32,r:20}]},{name:"Pulley / High Row",sets:[{w:35,r:15},{w:35,r:15},{w:30,r:15}]},{name:"Bizeps Kabel",sets:[{w:17.5,r:12},{w:17.5,r:12},{w:17.5,r:12}]}]},
+  {id:"1776509626773",date:"2026-04-18",type:"legs",bw:93,dur:65,exercises:[{name:"Beinpresse",sets:[{w:180,r:12},{w:180,r:12},{w:180,r:12},{w:180,r:12}]},{name:"Hip Thrust",sets:[{w:35,r:10},{w:40,r:10},{w:40,r:10},{w:40,r:10}]},{name:"Beinbeuger",sets:[{w:50,r:15},{w:50,r:15}]},{name:"Beinstrecker",sets:[{w:50,r:15},{w:50,r:15}]},{name:"Waden",sets:[{w:100,r:20},{w:120,r:20},{w:150,r:20}]}]},
+  {id:"1776866346828",date:"2026-04-22",type:"push",bw:94,dur:65,exercises:[{name:"Bankdrücken",sets:[{w:60,r:8},{w:60,r:8},{w:60,r:8},{w:60,r:8}]},{name:"Schulterdrücken",sets:[{w:20,r:12},{w:20,r:12}]},{name:"Schrägbankdrücken",sets:[{w:40,r:10},{w:40,r:9},{w:40,r:7}]},{name:"Seitheben Kabel",sets:[{w:2.5,r:12}]},{name:"Pushdown Seil",sets:[{w:12.5,r:15},{w:12.5,r:15},{w:12.5,r:13}]}]},
+  {id:"1777113242406",date:"2026-04-25",type:"pull",bw:null,dur:null,exercises:[{name:"Latzug",sets:[{w:55,r:10},{w:55,r:10},{w:55,r:10},{w:55,r:10}]},{name:"Rudern",sets:[{w:50,r:10},{w:55,r:10},{w:55,r:10},{w:55,r:10}]},{name:"Reverse Fly",sets:[{w:32,r:20},{w:32,r:20},{w:32,r:20}]},{name:"Pulley / High Row",sets:[{w:35,r:10},{w:35,r:10},{w:40,r:10}]}]},
+  {id:"1777200723495",date:"2026-04-26",type:"legs",bw:92,dur:50,exercises:[{name:"Beinpresse",sets:[{w:180,r:10},{w:200,r:10},{w:200,r:10},{w:200,r:10}]},{name:"Hip Thrust",sets:[{w:40,r:10},{w:40,r:10},{w:40,r:10}]},{name:"Beinbeuger",sets:[{w:50,r:15},{w:50,r:15}]},{name:"Beinstrecker",sets:[{w:50,r:15},{w:50,r:15}]},{name:"Waden",sets:[{w:150,r:20},{w:150,r:20},{w:150,r:20}]}]},
+  {id:"1777203775709",date:"2026-04-26",type:"pull",bw:93,dur:60,exercises:[{name:"Latzug",sets:[{w:55,r:10},{w:55,r:10},{w:55,r:10},{w:60,r:8}]},{name:"Rudern",sets:[{w:60,r:10},{w:60,r:10},{w:60,r:10},{w:60,r:10}]},{name:"Reverse Fly",sets:[{w:32,r:20},{w:32,r:20},{w:32,r:20}]},{name:"Pulley / High Row",sets:[{w:40,r:12},{w:40,r:12},{w:40,r:12}]},{name:"Bizeps Kabel",sets:[{w:20,r:12},{w:20,r:12},{w:20,r:12}]}]},
+  {id:"1777544666682",date:"2026-04-30",type:"push",bw:null,dur:null,exercises:[{name:"Bankdrücken",sets:[{w:40,r:15},{w:40,r:15},{w:40,r:15},{w:40,r:15}]},{name:"Schulterdrücken",sets:[{w:16,r:15},{w:16,r:15},{w:16,r:15}]},{name:"Schrägbankdrücken",sets:[{w:28,r:12},{w:28,r:12},{w:28,r:12}]},{name:"Seitheben Kabel",sets:[{w:2.5,r:12},{w:2.5,r:12},{w:2.5,r:12}]},{name:"Pushdown Seil",sets:[{w:12.5,r:15},{w:12.5,r:15},{w:12.5,r:15}]}]},
+  {id:"1777548069803",date:"2026-04-30",type:"pull",bw:94,dur:70,exercises:[{name:"Latzug",sets:[{w:55,r:10},{w:60,r:10},{w:60,r:10},{w:60,r:9}]},{name:"Rudern",sets:[{w:60,r:10},{w:60,r:10},{w:65,r:10},{w:65,r:10}]},{name:"Reverse Fly",sets:[{w:39,r:20},{w:39,r:20},{w:39,r:20}]},{name:"Pulley / High Row",sets:[{w:40,r:12},{w:45,r:12},{w:45,r:11}]},{name:"Bizeps Kabel",sets:[{w:20,r:12},{w:23,r:12},{w:23,r:12}]}]},
+  {id:"1777803087897",date:"2026-05-03",type:"push",bw:92,dur:65,exercises:[{name:"Bankdrücken",sets:[{w:60,r:10},{w:65,r:8},{w:65,r:8},{w:65,r:7}]},{name:"Schulterdrücken",sets:[{w:20,r:12},{w:25,r:12},{w:25,r:12}]},{name:"Schrägbankdrücken",sets:[{w:40,r:10},{w:40,r:9},{w:40,r:12}]},{name:"Seitheben Kabel",sets:[{w:3.75,r:12},{w:3.75,r:12},{w:3.75,r:12}]},{name:"Pushdown Seil",sets:[{w:15,r:15},{w:17.5,r:15},{w:17.5,r:15}]}]},
+  {id:"1777808197626",date:"2026-05-03",type:"pull",bw:92,dur:60,exercises:[{name:"Latzug",sets:[{w:60,r:10},{w:60,r:10},{w:65,r:9},{w:65,r:8}]},{name:"Rudern",sets:[{w:65,r:10},{w:65,r:10},{w:65,r:10},{w:65,r:10}]},{name:"Reverse Fly",sets:[{w:39,r:20},{w:39,r:20},{w:39,r:20}]},{name:"Pulley / High Row",sets:[{w:45,r:12},{w:45,r:12}]},{name:"Bizeps Kabel",sets:[{w:23,r:12},{w:23,r:12},{w:23,r:12}]}]},
 ];
 
 let TMPL={
   push:[
-    {name:'Bankdrücken',sets:4,range:'6–8',lw:60},
-    {name:'Schulterdrücken',sets:3,range:'10–12',lw:20},
-    {name:'Schrägbankdrücken',sets:3,range:'10–12',lw:37.5},
-    {name:'Seitheben Kabel',sets:3,range:'15–20',lw:8},
-    {name:'Pushdown Seil',sets:3,range:'12–15',lw:12.5},
+    {name:'Bankdrücken',sets:4,range:'6–8',lw:65},
+    {name:'Schulterdrücken',sets:3,range:'10–12',lw:25},
+    {name:'Schrägbankdrücken',sets:3,range:'10–12',lw:40},
+    {name:'Seitheben Kabel',sets:3,range:'15–20',lw:3.75},
+    {name:'Pushdown Seil',sets:3,range:'12–15',lw:17.5},
   ],
   pull:[
-    {name:'Latzug',sets:4,range:'8–10',lw:55},
-    {name:'Rudern',sets:4,range:'8–10',lw:45},
-    {name:'Reverse Fly',sets:3,range:'15–20',lw:32},
-    {name:'Pulley / High Row',sets:3,range:'10–12',lw:30},
-    {name:'Bizeps Kabel',sets:3,range:'10–12',lw:17.5},
+    {name:'Latzug',sets:4,range:'8–10',lw:65},
+    {name:'Rudern',sets:4,range:'8–10',lw:65},
+    {name:'Reverse Fly',sets:3,range:'15–20',lw:39},
+    {name:'Pulley / High Row',sets:3,range:'10–12',lw:45},
+    {name:'Bizeps Kabel',sets:3,range:'10–12',lw:23},
   ],
   legs:[
-    {name:'Beinpresse',sets:4,range:'8–10',lw:140},
-    {name:'Hip Thrust',sets:4,range:'8–10',lw:35},
-    {name:'Rumänisches Kreuzheben',sets:3,range:'8–10',lw:30},
-    {name:'Beinbeuger',sets:2,range:'12–15',lw:45},
-    {name:'Beinstrecker',sets:2,range:'12–15',lw:45},
-    {name:'Waden',sets:3,range:'15–20',lw:90},
+    {name:'Beinpresse',sets:4,range:'8–10',lw:200},
+    {name:'Hip Thrust',sets:4,range:'8–10',lw:40},
+    {name:'Rumänisches Kreuzheben',sets:3,range:'8–10',lw:40},
+    {name:'Beinbeuger',sets:2,range:'12–15',lw:50},
+    {name:'Beinstrecker',sets:2,range:'12–15',lw:50},
+    {name:'Waden',sets:3,range:'15–20',lw:150},
   ]
 };
 
@@ -633,25 +644,31 @@ function selType(t){
   saveDraft();
 }
 
+function parseNum(val){return parseFloat(String(val).replace(',','.'))||0;}
+
 function renderExList(){
   const exs=TMPL[curType];
   document.getElementById('ex-list').innerHTML=exs.map((ex,ei)=>{
     const sets=curSets[ex.name]||[];
     const prev=lastSess(curType,ex.name);
     const prevLine=prev?prev.map(s=>`${s.w}×${s.r}`).join('  '):'—';
-    const setRows=sets.map((s,si)=>`<div class="set-row"><span class="snum">${si+1}</span><input class="sinp" type="number" step="0.25" placeholder="kg" value="${s.w||''}" oninput="upd('${ex.name}',${si},'w',this.value)" inputmode="decimal"><input class="sinp" type="number" step="1" placeholder="Wdh" value="${s.r||''}" oninput="upd('${ex.name}',${si},'r',this.value)" inputmode="numeric"><button class="sdel" onclick="delS('${ex.name}',${si})">×</button></div>`).join('');
+    const setRows=sets.map((s,si)=>`<div class="set-row"><span class="snum">${si+1}</span><input class="sinp" type="text" inputmode="decimal" placeholder="kg" value="${s.w||''}" oninput="upd('${ex.name}',${si},'w',this.value)" autocomplete="off"><input class="sinp" type="text" inputmode="numeric" placeholder="Wdh" value="${s.r||''}" oninput="upd('${ex.name}',${si},'r',this.value)" autocomplete="off"><button class="sdel" onclick="delS('${ex.name}',${si})">×</button></div>`).join('');
     return`<div class="ex-logger"><div class="ex-lh" onclick="togEx(this)"><div><h4>${ex.name}</h4><div class="ex-target">${ex.sets} Sätze · ${ex.range}</div><div class="ex-prev">Letztes Mal: ${prevLine}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="wt">${sets[0]?.w||ex.lw} kg</span><span style="color:var(--muted);font-size:12px" class="arr">▾</span></div></div><div class="ex-body" id="eb-${ei}"><div class="col-hdr"><span>#</span><span>kg</span><span>Wdh</span><span></span></div><div id="sl-${ei}">${setRows}</div><button class="add-set-btn" onclick="addS('${ex.name}',${ei})">+ Satz</button></div></div>`;
   }).join('');
 }
 
 function togEx(hdr){const b=hdr.nextElementSibling,a=hdr.querySelector('.arr'),o=b.style.display!=='none';b.style.display=o?'none':'';a.style.transform=o?'rotate(-90deg)':'';}
-function upd(name,si,field,val){if(!curSets[name]||!curSets[name][si])return;curSets[name][si][field]=field==='w'?parseFloat(val)||0:parseInt(val)||0;saveDraft();}
+function upd(name,si,field,val){
+  if(!curSets[name]||!curSets[name][si])return;
+  curSets[name][si][field]=field==='w'?parseNum(val):parseInt(val)||0;
+  saveDraft();
+}
 function addS(name,ei){
   const arr=curSets[name],prev=arr[arr.length-1]||{w:0,r:''},si=arr.length;
   arr.push({w:prev.w,r:''});
   const con=document.getElementById('sl-'+ei),div=document.createElement('div');
   div.className='set-row';
-  div.innerHTML=`<span class="snum">${si+1}</span><input class="sinp" type="number" step="0.25" placeholder="kg" value="${prev.w||''}" oninput="upd('${name}',${si},'w',this.value)" inputmode="decimal"><input class="sinp" type="number" step="1" placeholder="Wdh" oninput="upd('${name}',${si},'r',this.value)" inputmode="numeric"><button class="sdel" onclick="delS('${name}',${si})">×</button>`;
+  div.innerHTML=`<span class="snum">${si+1}</span><input class="sinp" type="text" inputmode="decimal" placeholder="kg" value="${prev.w||''}" oninput="upd('${name}',${si},'w',this.value)" autocomplete="off"><input class="sinp" type="text" inputmode="numeric" placeholder="Wdh" oninput="upd('${name}',${si},'r',this.value)" autocomplete="off"><button class="sdel" onclick="delS('${name}',${si})">×</button>`;
   con.appendChild(div);
 }
 function delS(name,si){curSets[name].splice(si,1);renderExList();saveDraft();}
@@ -660,7 +677,7 @@ function saveWorkout(){
   if(!curType)return;
   const exs=TMPL[curType].map(ex=>({name:ex.name,sets:(curSets[ex.name]||[]).filter(s=>s.w>0&&s.r>0).map(s=>({w:+s.w,r:+s.r}))})).filter(e=>e.sets.length>0);
   if(!exs.length){alert('Mindestens eine vollständige Übung eintragen.');return;}
-  const bwVal=parseFloat(document.getElementById('inp-bw').value)||null;
+  const bwVal=parseNum(document.getElementById('inp-bw').value)||null;
   const durVal=parseInt(document.getElementById('inp-dur').value)||null;
   const prs=[];
   exs.forEach(ex=>{const top=Math.max(...ex.sets.map(s=>s.w));if(isPR(ex.name,top))prs.push(ex.name);});
